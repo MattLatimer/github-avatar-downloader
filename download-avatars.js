@@ -22,7 +22,10 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
 };
 
 const downloadImageByURL = function (url, filepath) {
-  request(url)
+  if (!fs.existsSync('./avatars/')) {
+    fs.mkdir('avatars');
+  }
+    request(url)
     .pipe(fs.createWriteStream(filepath));
 };
 
