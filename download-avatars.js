@@ -1,6 +1,6 @@
 // Requirements
 
-require('dotenv').config();
+const dotenvStatus = require('dotenv').config();
 const request = require('request');
 const fs = require('fs');
 const githubUser = process.env.GITHUB_USER;
@@ -8,7 +8,7 @@ const githubToken = process.env.GITHUB_ACCESS_TOKEN;
 
 // Function Definitions
 
-const getRepoContributors = function(repoOwner, repoName, cb) {
+const getRepoContributors = function (repoOwner, repoName, cb) {
   const requestURL = 'https://' + githubUser + ':' + githubToken + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
   const options = {
     url: requestURL,
@@ -17,8 +17,8 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
     }
   };
   request(options, (error, response, body) => {
-    if (response.statusCode !== 200) {
-      console.log('Response code was not OK. I don\'t think that User/Repo exists!');
+    if (response.statusCode === 404) {
+      console.log('Response code was 404 - Not Found. I don\'t think that User/Repo exists!');
     } else {
       cb(JSON.parse(body));
     }
@@ -29,7 +29,7 @@ const downloadImageByURL = function (url, filepath) {
   if (!fs.existsSync('./avatars/')) {
     fs.mkdir('avatars');
   }
-    request(url)
+  request(url)
     .pipe(fs.createWriteStream(filepath));
 };
 
@@ -37,9 +37,14 @@ const downloadImageByURL = function (url, filepath) {
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
-if (process.argv.length !== 4) {
+switch (true) {
+case process.argv.length !== 4:
   console.log('Usage: node download-avatars.js <owner> <repo>');
-} else {
+  break;
+case Object.keys(dotenvStatus)[0] === 'error':
+  console.log('There\'s somrthing wrong with your .env file. Is it missing?')
+  break;
+default: {
   const owner = process.argv[2];
   const repo = process.argv[3];
   getRepoContributors(owner, repo, (data) => {
@@ -49,3 +54,5 @@ if (process.argv.length !== 4) {
     });
   });
 }
+}
+
