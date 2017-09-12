@@ -44,6 +44,9 @@ case process.argv.length !== 4:
 case Object.keys(dotenvStatus)[0] === 'error':
   console.log('There\'s somrthing wrong with your .env file. Is it missing?')
   break;
+case githubUser === undefined || githubToken === undefined:
+  console.log('You are missing important GitHub Authentication information!');
+  break;
 default: {
   const owner = process.argv[2];
   const repo = process.argv[3];
