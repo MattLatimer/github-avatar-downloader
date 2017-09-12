@@ -17,7 +17,11 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
     }
   };
   request(options, (error, response, body) => {
-    cb(JSON.parse(body));
+    if (response.statusCode !== 200) {
+      console.log('Response code was not OK. I don\'t think that User/Repo exists!');
+    } else {
+      cb(JSON.parse(body));
+    }
   });
 };
 
