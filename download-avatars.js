@@ -4,8 +4,6 @@ const fs = require('fs');
 const githubUser = process.env.GITHUB_USER;
 const githubToken = process.env.GITHUB_ACCESS_TOKEN;
 
-console.log('Welcome to the GitHub Avatar Downloader!');
-
 const getRepoContributors = function(repoOwner, repoName, cb) {
   const requestURL = 'https://' + githubUser + ':' + githubToken + '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
   const options = {
@@ -23,7 +21,7 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
 const downloadImageByURL = function (url, filepath) {
   console.log(url);
   request(url)
-    .pipe(fs.createWriteStream(filepath));
+  .pipe(fs.createWriteStream(filepath));
 };
 
 const parseAvatarURLs = function(data) {
@@ -33,7 +31,12 @@ const parseAvatarURLs = function(data) {
   });
 };
 
-const owner = process.argv[2];
-const repo = process.argv[3];
+console.log('Welcome to the GitHub Avatar Downloader!');
 
-getRepoContributors(owner, repo, parseAvatarURLs);
+if (process.argv.length !== 4) {
+  console.log('Usage: node download-avatars.js <owner> <repo>')
+} else {
+  const owner = process.argv[2];
+  const repo = process.argv[3];
+  getRepoContributors(owner, repo, parseAvatarURLs);
+}
