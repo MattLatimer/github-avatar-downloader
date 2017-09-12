@@ -33,5 +33,7 @@ const parseAvatarURLs = function(data) {
   });
 };
 
+const owner = process.argv[2];
+const repo = process.argv[3];
 
-getRepoContributors("jquery", "jquery", parseAvatarURLs);
+getRepoContributors(owner, repo, parseAvatarURLs);
