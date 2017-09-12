@@ -13,15 +13,14 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
     }
   };
   request(options, (error, response, body) => {
-    const data = JSON.parse(body);
-    cb(data);
+    cb(JSON.parse(body));
   });
 };
 
 const downloadImageByURL = function (url, filepath) {
   console.log(url);
   request(url)
-  .pipe(fs.createWriteStream(filepath));
+    .pipe(fs.createWriteStream(filepath));
 };
 
 const parseAvatarURLs = function(data) {
@@ -34,7 +33,7 @@ const parseAvatarURLs = function(data) {
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 if (process.argv.length !== 4) {
-  console.log('Usage: node download-avatars.js <owner> <repo>')
+  console.log('Usage: node download-avatars.js <owner> <repo>');
 } else {
   const owner = process.argv[2];
   const repo = process.argv[3];
