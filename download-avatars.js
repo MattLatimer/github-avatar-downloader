@@ -1,5 +1,6 @@
 require('dotenv').config();
 const request = require('request');
+const fs = require('fs');
 const githubUser = process.env.GITHUB_USER;
 const githubToken = process.env.GITHUB_ACCESS_TOKEN;
 
@@ -19,10 +20,18 @@ const getRepoContributors = function(repoOwner, repoName, cb) {
   });
 };
 
+const downloadImageByURL = function (url, filepath) {
+  console.log(url);
+  request(url)
+    .pipe(fs.createWriteStream(filepath));
+};
+
 const parseAvatarURLs = function(data) {
   data.forEach((user) => {
-    console.log(user.avatar_url);
+    fileTarget = './avatars/' + user.login + '.png';
+    downloadImageByURL(user.avatar_url, fileTarget);
   });
 };
+
 
 getRepoContributors("jquery", "jquery", parseAvatarURLs);
