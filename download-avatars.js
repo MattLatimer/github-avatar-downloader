@@ -30,7 +30,7 @@ const getRepoContributors = function (repoOwner, repoName, cb) {
   });
 };
 
-const downloadImageByURL = function (url, file) {
+const downloadImageByURL = function (url, name) {
   if (!fs.existsSync('./avatars/')) {
     fs.mkdir('avatars');
   }
@@ -38,9 +38,9 @@ const downloadImageByURL = function (url, file) {
   request(url, (err, response, body) => {
     imageType = response.headers['content-type'].substring(6);
   })
-    .pipe(fs.createWriteStream(`./avatars/${file}`)
+    .pipe(fs.createWriteStream(`./avatars/${name}`)
       .on('close', (err) => {
-        fs.rename(`./avatars/${file}`, `./avatars/${file}.${imageType}`);
+        fs.rename(`./avatars/${name}`, `./avatars/${name}.${imageType}`);
       }));
 };
 
@@ -63,8 +63,7 @@ default: {
   const repo = process.argv[3];
   getRepoContributors(owner, repo, (data) => {
     data.forEach((user) => {
-      fileName = user.login;
-      downloadImageByURL(user.avatar_url, fileName);
+      downloadImageByURL(user.avatar_url, user.login);
     });
   });
 }
