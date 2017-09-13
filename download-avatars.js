@@ -30,12 +30,19 @@ const getRepoContributors = function (repoOwner, repoName, cb) {
   });
 };
 
-const downloadImageByURL = function (url, filepath) {
+const downloadImageByURL = function (url, file) {
   if (!fs.existsSync('./avatars/')) {
     fs.mkdir('avatars');
   }
-  request(url)
-    .pipe(fs.createWriteStream(filepath));
+  let imageType;
+  request(url, (err, response, body) => {
+    imageType = response.headers['content-type'].substring(6);
+    console.log(imageType);
+  })
+    .pipe(fs.createWriteStream(`./avatars/${file}`)
+      .on('close', (err) => {
+        fs.rename(`./avatars/${file}`, `./avatars/${file}.${imageType}`);
+      }));
 };
 
 //Begin User Interaction
@@ -47,7 +54,7 @@ case process.argv.length !== 4:
   console.log('Usage: node download-avatars.js <owner> <repo>');
   break;
 case Object.keys(dotenvStatus)[0] === 'error':
-  console.log('Couldn\'t read your .env file. Is it missing?')
+  console.log('Couldn\'t read your .env file. Is it missing?');
   break;
 case githubUser === undefined || githubToken === undefined:
   console.log('Your .env is missing GitHub Authentication information!');
@@ -57,8 +64,8 @@ default: {
   const repo = process.argv[3];
   getRepoContributors(owner, repo, (data) => {
     data.forEach((user) => {
-      fileTarget = './avatars/' + user.login + '.png';
-      downloadImageByURL(user.avatar_url, fileTarget);
+      fileName = user.login;
+      downloadImageByURL(user.avatar_url, fileName);
     });
   });
 }
