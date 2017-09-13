@@ -37,7 +37,6 @@ const downloadImageByURL = function (url, file) {
   let imageType;
   request(url, (err, response, body) => {
     imageType = response.headers['content-type'].substring(6);
-    console.log(imageType);
   })
     .pipe(fs.createWriteStream(`./avatars/${file}`)
       .on('close', (err) => {
