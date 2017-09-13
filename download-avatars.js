@@ -20,7 +20,12 @@ const getRepoContributors = function (repoOwner, repoName, cb) {
     if (response.statusCode === 404) {
       console.log('Response code was 404 - Not Found. I don\'t think that User/Repo exists!');
     } else {
-      cb(JSON.parse(body));
+      const parsed = JSON.parse(body);
+      if (parsed.message) {
+        console.log(`GitHub message: ${parsed.message}`);
+      } else {
+        cb(parsed);
+      }
     }
   });
 };
@@ -42,10 +47,10 @@ case process.argv.length !== 4:
   console.log('Usage: node download-avatars.js <owner> <repo>');
   break;
 case Object.keys(dotenvStatus)[0] === 'error':
-  console.log('There\'s somrthing wrong with your .env file. Is it missing?')
+  console.log('Couldn\'t read your .env file. Is it missing?')
   break;
 case githubUser === undefined || githubToken === undefined:
-  console.log('You are missing important GitHub Authentication information!');
+  console.log('Your .env is missing GitHub Authentication information!');
   break;
 default: {
   const owner = process.argv[2];
